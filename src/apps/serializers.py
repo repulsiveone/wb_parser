@@ -5,4 +5,4 @@ from models import CardModel
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = CardModel
-        fields = ['name', 'price', 'discounter_price', 'rating', 'feedback']
+        fields = ['name', 'price', 'discounter_price', 'rating', 'feedbacks']
