@@ -4,6 +4,21 @@ from time import time
 
 
 def rate_limited(max_requests_per_minute: int):
+	"""
+    Декоратор для ограничения частоты вызовов функции.
+    Гарантирует, что функция не будет вызываться чаще указанного лимита.
+
+    Args:
+        max_requests_per_minute (int): Максимальное количество разрешенных запросов в минуту.
+
+    Returns:
+        Декоратор функции, который применяет rate limiting.
+
+    Пример использования:
+        @rate_limited(100)  # Не более 100 вызовов в минуту
+        async def fetch_page():
+            ...
+	"""
 	request_delay = 60 / max_requests_per_minute
 	last_request_time = 0
 
