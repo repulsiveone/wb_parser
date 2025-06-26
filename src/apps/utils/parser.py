@@ -16,6 +16,7 @@ class WildberriesParser:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         }
         self.session = httpx.AsyncClient(headers=self.headers)
+        self.products_info = defaultdict(dict)
 
     async def __aenter__(self):
         return self
@@ -33,18 +34,17 @@ class WildberriesParser:
         catalog = response.json()
         return catalog
     
-    async def _get_products_info(self, data: dict) -> dict:
+    async def _get_products_info(self, data: dict):
         """
         Выбирает нужную информацию из карточек товаров.
         """
-        products_info_dict = defaultdict(dict)
         products = data.get('data').get('products')
         
         for product in products:
             try:
                 id = product.get('id')
                 price_info = product['sizes'][0]['price']
-                products_info_dict[id] = {
+                self.products_info[id] = {
                     'name': product['name'], 
                     'rating': product['rating'], 
                     'feedbacks': product['feedbacks'], 
@@ -54,12 +54,16 @@ class WildberriesParser:
             except (KeyError, IndexError):
                 continue
         
-        return products_info_dict
+        return
     
     async def parse(self) -> dict:
-        url = f"https://search.wb.ru/exactmatch/ru/common/v13/search?ab_testing=false&appType=1&curr=rub&dest=-2228364&hide_dtype=13&lang=ru&page=1&query={self.search_query}&resultset=catalog"
-        catalog = await self._fetch_page(url)
-        products_info = await self._get_products_info(catalog)
-        return products_info
-    
-    # TODO добавить описания
+        page = 1
+        url = f"https://search.wb.ru/exactmatch/ru/common/v13/search?ab_testing=false&appType=1&curr=rub&dest=-2228364&hide_dtype=13&lang=ru&page={page}&query={self.search_query}&resultset=catalog"
+        while True:
+            catalog = await self._fetch_page(url)
+            if not catalog or len(catalog.get('data').get('products')) <= 0:
+                break
+            await self._get_products_info(catalog)
+            page += 1
+            
+        return self.products_info
