@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from asgiref.sync import async_to_sync
+from django.shortcuts import render
 
 from .models import CardModel
 from .utils.parser import WildberriesParser
@@ -11,6 +12,7 @@ from .serializers import ProductSerializer
 
 
 class ProductView(viewsets.ModelViewSet):
+    # TODO добавить вывод по категории товара
     queryset = CardModel.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -18,6 +20,9 @@ class ProductView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def parse_products(self, request):
+        """
+        Получает словарь с информацией о товарах через WildberriesParser.
+        """
         category = request.data.get('category')
 
         try:
@@ -40,7 +45,9 @@ class ProductView(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-    # @sync_to_async
-    async def _run_async_parser(self, category):
+    async def _run_async_parser(self, category: str) -> dict:
         async with WildberriesParser(category) as parser:
             return await parser.parse()
+        
+def main(request):
+    return render(request, 'index.html')

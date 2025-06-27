@@ -61,9 +61,11 @@ class WildberriesParser:
         url = f"https://search.wb.ru/exactmatch/ru/common/v13/search?ab_testing=false&appType=1&curr=rub&dest=-2228364&hide_dtype=13&lang=ru&page={page}&query={self.search_query}&resultset=catalog"
         while True:
             catalog = await self._fetch_page(url)
-            if not catalog or len(catalog.get('data').get('products')) <= 0:
+            # if not catalog or len(catalog.get('data').get('products')) <= 0:
+                # break
+            if page == 3:
                 break
             await self._get_products_info(catalog)
             page += 1
-            
+
         return self.products_info

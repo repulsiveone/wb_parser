@@ -19,6 +19,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from apps.views import ProductView
+from apps import views
 
 
 router = DefaultRouter()
@@ -27,4 +28,5 @@ router.register(r'products', ProductView, basename='product')
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('api/', include(router.urls)),
+	path('', views.main, name='index'),
 ]
