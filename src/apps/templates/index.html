@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парсер Wildberries</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 8px 16px; cursor: pointer; }
+        .filters { margin: 20px 0; padding: 10px; background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>Товары Wildberries</h1>
+
+    <!-- Кнопка для парсинга -->
+    <div>
+        <input type="text" id="categoryInput" placeholder="Категория (например, electronics)">
+        <button onclick="parseProducts()">Запустить парсинг</button>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="filters">
+        <select id="sortField" onchange="loadProducts()">
+            <option value="">Без сортировки</option>
+            <option value="price">Цена (по возрастанию)</option>
+            <option value="-price">Цена (по убыванию)</option>
+            <option value="rating">Рейтинг (по возрастанию)</option>
+            <option value="-rating">Рейтинг (по убыванию)</option>
+            <option value="feedbacks">Отзывы (по возрастанию)</option>
+            <option value="-feedbacks">Отзывы (по убыванию)</option>
+        </select>
+
+         <!-- Фильтры -->
+        <input type="number" id="minPrice" placeholder="Мин. цена" onchange="loadProducts()">
+        <input type="number" id="maxPrice" placeholder="Макс. цена" onchange="loadProducts()">
+        
+        <input type="number" id="minRating" placeholder="Мин. рейтинг" min="0" max="5" step="0.1" onchange="loadProducts()">
+        <input type="number" id="maxRating" placeholder="Макс. рейтинг" min="0" max="5" step="0.1" onchange="loadProducts()">
+        
+        <input type="number" id="minFeedbacks" placeholder="Мин. отзывов" onchange="loadProducts()">
+        <input type="number" id="maxFeedbacks" placeholder="Макс. отзывов" onchange="loadProducts()">
+    </div>
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <div style="width: 400px; height: 300px;">
+            <canvas id="priceHistogram"></canvas>
+        </div>
+        <div style="width: 400px; height: 300px;">
+            <canvas id="discountRatingChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Таблица с товарами -->
+    <table id="productsTable">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Цена со скидкой</th>
+                <th>Рейтинг</th>
+                <th>Отзывы</th>
+            </tr>
+        </thead>
+        <tbody id="productsBody"></tbody>
+    </table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="static/script.js"></script>
+</body>
+</html>
