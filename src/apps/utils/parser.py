@@ -2,7 +2,7 @@ import httpx
 import asyncio
 from collections import defaultdict
 
-from decorators import rate_limited
+from .decorators import rate_limited
 
 
 class WildberriesParser:

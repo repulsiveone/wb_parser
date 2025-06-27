@@ -33,3 +33,10 @@ staticfiles/
 htmlcov/
 .pytest_cache/
 .mypy_cache/
+
+# Curl
+*.curl.log
+*.curl.txt
+*.curl_command
+*_request.sh
+*_request.txt

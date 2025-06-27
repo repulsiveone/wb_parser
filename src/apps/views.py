@@ -2,12 +2,12 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
 
-from models import CardModel
-from utils.parser import WildberriesParser
-from filters import ProductFilter
-from serializers import ProductSerializer
+from .models import CardModel
+from .utils.parser import WildberriesParser
+from .filters import ProductFilter
+from .serializers import ProductSerializer
 
 
 class ProductView(viewsets.ModelViewSet):
@@ -17,12 +17,12 @@ class ProductView(viewsets.ModelViewSet):
     filterset_class = ProductFilter
 
     @action(detail=False, methods=['post'])
-    async def parse_products(self, request):
+    def parse_products(self, request):
         category = request.data.get('category')
 
         try:
-            products_data = self._run_async_parser(category)
-            for product in products_data:
+            products_data = async_to_sync(self._run_async_parser)(category)
+            for product in list(products_data.values()):
                 CardModel.objects.update_or_create(
                     name=product['name'],
                     price=product['price'],
@@ -40,7 +40,7 @@ class ProductView(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-    @sync_to_async
+    # @sync_to_async
     async def _run_async_parser(self, category):
         async with WildberriesParser(category) as parser:
             return await parser.parse()
